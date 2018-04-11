@@ -1,0 +1,34 @@
+0: process 1 (pid 11662, parent 11661) has STARTED with balance $10
+0: process 2 (pid 11663, parent 11661) has STARTED with balance $20
+0: process 3 (pid 11664, parent 11661) has STARTED with balance $30
+0: process 3 (pid 11664, parent 11661) has STARTED with balance $30
+0: process 1 (pid 11662, parent 11661) has STARTED with balance $10
+0: process 2 (pid 11663, parent 11661) has STARTED with balance $20
+0: process 3 (pid 11664, parent 11661) has STARTED with balance $30
+0: process 0 received all STARTED messages
+0: process 2 (pid 11663, parent 11661) has STARTED with balance $20
+0: process 3 (pid 11664, parent 11661) has STARTED with balance $30
+0: process 1 (pid 11662, parent 11661) has STARTED with balance $10
+0: process 3 (pid 11664, parent 11661) has STARTED with balance $30
+0: process 2 (pid 11663, parent 11661) has STARTED with balance $20
+0: process 3 (pid 11664, parent 11661) has STARTED with balance $30
+0: process 2 received all STARTED messages
+0: process 1 received all STARTED messages
+0: process 3 received all STARTED messages
+0: process 1 has DONE with balance $10
+0: process 2 has DONE with balance $20
+0: process 3 has DONE with balance $30
+0: process 2 has DONE with balance $20
+0: process 1 has DONE with balance $10
+0: process 3 has DONE with balance $30
+0: process 3 has DONE with balance $30
+0: process 0 received all DONE messages
+0: process 2 has DONE with balance $20
+0: process 1 has DONE with balance $10
+0: process 3 has DONE with balance $30
+0: process 3 has DONE with balance $30
+0: process 3 has DONE with balance $30
+0: process 2 has DONE with balance $20
+0: process 1 received all DONE messages
+0: process 2 received all DONE messages
+0: process 3 received all DONE messages
