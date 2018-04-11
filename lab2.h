@@ -5,6 +5,6 @@
 #include "banking.h"
 
 int second_phase(int*** matrix, int proc_id, int N,
-	int fd, balance_t* balance);
+	int fd, balance_t* balance, BalanceHistory* balance_history);
 
 #endif

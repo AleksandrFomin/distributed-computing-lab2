@@ -1,35 +1,35 @@
-0: process 1 (pid 18451, parent 18450) has STARTED with balance $10
-0: process 1 (pid 18451, parent 18450) has STARTED with balance $10
-0: process 1 (pid 18451, parent 18450) has STARTED with balance $10
-0: process 2 (pid 18452, parent 18450) has STARTED with balance $20
-0: process 3 (pid 18453, parent 18450) has STARTED with balance $30
-0: process 2 (pid 18452, parent 18450) has STARTED with balance $20
-0: process 3 (pid 18453, parent 18450) has STARTED with balance $30
-0: process 3 (pid 18453, parent 18450) has STARTED with balance $30
-0: process 2 (pid 18452, parent 18450) has STARTED with balance $20
+0: process 1 (pid 20330, parent 20329) has STARTED with balance $10
+0: process 3 (pid 20332, parent 20329) has STARTED with balance $30
+0: process 2 (pid 20331, parent 20329) has STARTED with balance $20
+0: process 1 (pid 20330, parent 20329) has STARTED with balance $10
+0: process 3 (pid 20332, parent 20329) has STARTED with balance $30
+0: process 3 (pid 20332, parent 20329) has STARTED with balance $30
+0: process 2 (pid 20331, parent 20329) has STARTED with balance $20
+0: process 1 (pid 20330, parent 20329) has STARTED with balance $10
+0: process 3 (pid 20332, parent 20329) has STARTED with balance $30
 0: process 0 received all STARTED messages
-0: process 3 (pid 18453, parent 18450) has STARTED with balance $30
-0: process 3 (pid 18453, parent 18450) has STARTED with balance $30
+0: process 2 (pid 20331, parent 20329) has STARTED with balance $20
+0: process 3 (pid 20332, parent 20329) has STARTED with balance $30
 0: process 1 received all STARTED messages
-0: process 2 (pid 18452, parent 18450) has STARTED with balance $20
-0: process 3 (pid 18453, parent 18450) has STARTED with balance $30
+0: process 3 (pid 20332, parent 20329) has STARTED with balance $30
+0: process 2 (pid 20331, parent 20329) has STARTED with balance $20
 2: process 1 transferred $ 1 to process 2
-2: process 2 received all STARTED messages
 2: process 3 received all STARTED messages
+2: process 2 received all STARTED messages
 2: process 2 received $ 1 from process 1
 4: process 2 transferred $ 2 to process 3
 4: process 3 received $ 2 from process 2
 6: process 3 transferred $ 1 to process 1
 6: process 1 received $ 1 from process 3
 6: process 1 has DONE with balance $10
+6: process 2 has DONE with balance $19
+6: process 1 has DONE with balance $10
+6: process 3 has DONE with balance $31
 6: process 1 has DONE with balance $10
 6: process 2 has DONE with balance $19
 6: process 3 has DONE with balance $31
-6: process 2 has DONE with balance $19
-6: process 1 has DONE with balance $10
-6: process 2 has DONE with balance $19
 6: process 3 has DONE with balance $31
-6: process 3 has DONE with balance $31
+6: process 2 has DONE with balance $19
 6: process 0 received all DONE messages
 6: process 3 has DONE with balance $31
 6: process 3 has DONE with balance $31

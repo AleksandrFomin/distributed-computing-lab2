@@ -7,7 +7,6 @@
 
 void transfer(void * parent_data, local_id src, local_id dst,
               balance_t amount){
-    printf("%d %d\n",src, dst );
     MessageHeader header;
     TransferOrder* trOrd;
     Message* msg;
@@ -24,27 +23,17 @@ void transfer(void * parent_data, local_id src, local_id dst,
 
     if(((SourceProc*)parent_data)->proc_id != 0){
     	((SourceProc*)parent_data)->proc_id = src;
-    	if(send(parent_data, dst, msg) < 0){
-			return;
-		}
+    	send(parent_data, dst, msg);
 	}
 	if(((SourceProc*)parent_data)->proc_id == 0){
-    	if(send(parent_data, dst, msg) < 0){
-			return;
-		}
-		if(send(parent_data, src, msg) < 0){
-			return;
-		}
-		printf("%s %d\n", "send2", src);
-		if(receive(parent_data, dst, msg) < 0){
-			return;
-		}
-		printf("%s\n", "received");
+    	send(parent_data, dst, msg);
+		send(parent_data, src, msg);
+		receive(parent_data, dst, msg);
 	}
 }
 
 int second_phase(int*** matrix, int proc_id, int N,
-	int fd, balance_t* balance){
+	int fd, balance_t* balance, BalanceHistory* balance_history){
 
 	SourceProc* sp;
 	MessageHeader header;
@@ -53,6 +42,7 @@ int second_phase(int*** matrix, int proc_id, int N,
 	local_id to;
 	balance_t amount;
 	TransferOrder* trOrd;
+	BalanceState balance_state;
 
 	msg = (Message*)malloc(sizeof(Message));
 	trOrd = (TransferOrder*)malloc(sizeof(TransferOrder));
@@ -68,23 +58,35 @@ int second_phase(int*** matrix, int proc_id, int N,
 		if(msg->s_header.s_type == TRANSFER){
 			if(proc_id == from){
 				(*balance) -= amount;
+
+				balance_state.s_balance = *balance;
+				balance_state.s_time = get_physical_time();
+				balance_state.s_balance_pending_in = 0;
+				balance_history->s_history[balance_state.s_time] = balance_state;
+
 				transfer(sp, from, to, amount);
 			}
 
 			if(proc_id == to){
-				receive((void*)sp, from, msg);
+				receive(sp, from, msg);
 				amount = ((TransferOrder*)(msg->s_payload))->s_amount;
 				(*balance) += amount;
 
+				balance_state.s_balance = *balance;
+				balance_state.s_time = get_physical_time();
+				balance_state.s_balance_pending_in = 0;
+				balance_history->s_history[balance_state.s_time] = balance_state;
+
 				header = prepare_message_header(4, ACK);
 	    		msg = prepare_message(header, "NULL");
-				send((void*)sp, PARENT_ID, msg);
+				send(sp, PARENT_ID, msg);
 			}
 		}
 		if(msg->s_header.s_type == STOP){
 			break;
 		}
 	}
+	balance_history->s_history_len=balance_state.s_time ;
 	return 0;
 }
 
