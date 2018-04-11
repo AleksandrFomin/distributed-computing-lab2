@@ -13,6 +13,7 @@
 #include "ipc.h"
 #include "pa1.h"
 #include "lab1.h"
+#include "lab2.h"
 #include "banking.h"
 
 //export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:~/Документы/ИТМО/3курс(весна)/Распределенные вычисления/pa2";
@@ -26,6 +27,7 @@ int main(int argc, char* argv[])
 	int*** fds;
 	local_id proc_id;
 	balance_t balance;
+	SourceProc* sp;
 	Options* opts = (Options*)malloc(sizeof(Options));
 
 	opts = get_key_value(argc, argv);
@@ -57,8 +59,11 @@ int main(int argc, char* argv[])
 				if(first_phase(fds, proc_id, N, log_fd, balance) < 0){
 					printf("First phase failed\n");
 				}
+				if(second_phase(fds, proc_id, N, log_fd, &balance) < 0){
+					printf("Second phase failed\n");
+				}
 				if(third_phase(fds, proc_id, N, log_fd, balance) < 0){
-					printf("First phase failed\n");
+					printf("Third phase failed\n");
 				}
 				exit(0);
 				break;
@@ -73,10 +78,16 @@ int main(int argc, char* argv[])
 	if(get_message(fds, PARENT_ID, N, log_fd, STARTED) < 0){
 		return -1;
 	}
+
+	sp = prepare_source_proc(fds, PARENT_ID, N, log_fd);
+
+	bank_robbery(sp, N);
+	send_message(fds, proc_id, N, log_fd, STOP, balance);
+
 	if(get_message(fds, PARENT_ID, N, log_fd, DONE) < 0){
 		return -1;
 	}
-	
+
 	for(i = 0; i < N; i++){
 		wait(NULL);
 	}

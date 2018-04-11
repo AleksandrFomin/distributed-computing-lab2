@@ -1,9 +1,6 @@
 #ifndef __LAB1_H
 #define __LAB1_H
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "ipc.h"
 #include "banking.h"
 

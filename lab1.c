@@ -107,7 +107,7 @@ int log_events(int fd, char* str){
 	if(write(fd, str, strlen(str)) < 0){
 		return -1;
 	}
-	printf("%s\n", str);
+	printf("%s", str);
 	return 0;
 }
 
@@ -115,11 +115,25 @@ int send(void * self, local_id dst, const Message * msg){
 	int pipe_fd, proc_from;
 	int*** matrix;
 	SourceProc* sp;
+	char msg_text[MAX_PAYLOAD_LEN];
 
 	sp = (SourceProc*)self;
 	matrix = sp->matrix;
 	proc_from = sp->proc_id;
 	pipe_fd = matrix[proc_from][dst][1];
+
+	switch(msg->s_header.s_type){
+		case TRANSFER:
+			sprintf(msg_text, log_transfer_out_fmt, get_physical_time(),
+				proc_from, ((TransferOrder*)(msg->s_payload))->s_amount,
+				dst);
+			if(proc_from!=0){
+				log_events(sp->fd, msg_text);
+			}
+			break;
+		default:
+			break;
+	}
 
 	if(write(pipe_fd, msg, sizeof(MessageHeader) + 
 		msg->s_header.s_payload_len) < 0){
@@ -141,6 +155,7 @@ int send_multicast(void * self, const Message * msg){
 			continue;
 		}
 		log_events(sp->fd, (char*)msg->s_payload);
+
 		if(send(self, i, msg) < 0){
 			return -1;
 		}
@@ -163,7 +178,7 @@ MessageHeader prepare_message_header(uint16_t len, int16_t type){
 	msg_header.s_magic = MESSAGE_MAGIC;
 	msg_header.s_payload_len = len;
 	msg_header.s_type = type;
-	msg_header.s_local_time = time(NULL);
+	msg_header.s_local_time = get_physical_time();
 	return msg_header;
 }
 
@@ -230,6 +245,7 @@ int receive(void * self, local_id from, Message * msg){
 	int pipe_fd;
 	int*** matrix;
 	local_id proc_id;
+	char msg_text[MAX_PAYLOAD_LEN];
 
 	sp = (SourceProc*)self;
 	proc_id = sp->proc_id;
@@ -238,6 +254,19 @@ int receive(void * self, local_id from, Message * msg){
 	if(read(pipe_fd, msg, sizeof(Message)) ==-1){
 		return -1;
 	}
+	switch(msg->s_header.s_type){
+		case TRANSFER:
+			sprintf(msg_text, log_transfer_in_fmt, get_physical_time(),
+				proc_id, ((TransferOrder*)(msg->s_payload))->s_amount,
+				from);
+			if(from != 0){
+				log_events(sp->fd, msg_text);
+			}
+			break;
+		default:
+			break;
+	}
+
 	return 0;
 }
 
