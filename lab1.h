@@ -47,4 +47,6 @@ int first_phase(int*** matrix, int proc_id, int N,
 int third_phase(int*** matrix, int proc_id, int N,
 	int fd, balance_t balance);
 
+Message* create_message(MessageType msg_type, char* buf, int length);
+
 #endif

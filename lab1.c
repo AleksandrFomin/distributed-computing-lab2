@@ -45,6 +45,8 @@ int*** create_matrix(int N){
 				if(pipe(fd)==-1){
 					printf("Failed to create pipe");
 				}
+					fcntl(fd[0], F_SETFL, O_NONBLOCK);
+				fcntl(fd[1], F_SETFL, O_NONBLOCK);
 				matrix[i][j][0] = fd[0];
 				matrix[i][j][1] = fd[1];
 			}
@@ -182,6 +184,19 @@ MessageHeader prepare_message_header(uint16_t len, int16_t type){
 	return msg_header;
 }
 
+Message* create_message(MessageType msg_type, char* buf, int length){
+	MessageHeader* header=(MessageHeader*)malloc(sizeof(MessageHeader));
+	Message* msg = (Message*)malloc(sizeof(Message));
+	header->s_magic = MESSAGE_MAGIC;
+	header->s_payload_len = length;
+	header->s_type = msg_type;
+	header->s_local_time = get_physical_time();
+
+	msg->s_header = *header;
+	memcpy(msg->s_payload, buf, length);
+	return msg;
+}
+
 Message* prepare_message(MessageHeader msg_header, char msg_text[MAX_PAYLOAD_LEN]){
 	Message* msg = (Message*)malloc(sizeof(Message));
 	msg->s_header = msg_header;
@@ -286,9 +301,10 @@ int receive_all(void* self, MessageType type){
 		if(i==proc_id){
 			continue;
 		}
-		if(receive(self, i, msg) < 0){
-			return -1;
-		}
+		// if(receive(self, i, msg) < 0){
+		// 	return -1;
+		// }
+		while(receive(self, i , msg)==-1);
 		if(msg->s_header.s_type != type){
 			return -1;
 		}

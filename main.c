@@ -26,11 +26,13 @@ int main(int argc, char* argv[])
 	int i, N, log_fd;
 	int*** fds;
 	local_id proc_id;
-	balance_t balance;
-	MessageHeader header;
-	Message* msg = (Message*)malloc(sizeof(Message));
+	balance_t balance = 0;
+	// MessageHeader header;
+	// Message* msg = (Message*)malloc(sizeof(Message));
 	SourceProc* sp;
 	AllHistory* all_history;
+	timestamp_t time;
+	BalanceState* balanceState = (BalanceState*)malloc(sizeof(BalanceState));
 
 	BalanceHistory* balance_history = (BalanceHistory*)malloc(
 									sizeof(BalanceHistory));
@@ -56,6 +58,16 @@ int main(int argc, char* argv[])
 			case 0:
 				proc_id = i + 1;
 				balance = opts->values[i];
+
+				balanceState -> s_balance = balance;
+				// printf("%d\n",balanceState -> s_balance );
+				time = get_physical_time();
+				// if(time%2==0){time/=2;}
+				// printf("%d\n", time);
+				balanceState -> s_time = time;
+				balance_history->s_id = proc_id;
+				balance_history->s_history[time] = (*balanceState);
+
 				close_pipes(fds, N, proc_id);
 
 				first_phase(fds, proc_id, N, log_fd, balance);
@@ -63,12 +75,7 @@ int main(int argc, char* argv[])
 							 &balance, balance_history);
 				third_phase(fds, proc_id, N, log_fd, balance);
 
-				sp = prepare_source_proc(fds, proc_id, N, log_fd);
-				header = prepare_message_header(balance_history->s_history_len,
-												BALANCE_HISTORY);
-				balance_history->s_id = proc_id;
-	    		msg = prepare_message(header, (char*)balance_history);
-				send(sp, PARENT_ID, msg);
+				send_history(fds, proc_id, N, log_fd, balance_history);
 
 				exit(0);
 				break;
@@ -87,20 +94,13 @@ int main(int argc, char* argv[])
 
 	get_message(fds, PARENT_ID, N, log_fd, DONE);
 
-	all_history = (AllHistory*)malloc(sizeof(AllHistory));
+	all_history = receive_all_history(fds, PARENT_ID, N, log_fd);
 
-	for(i = 0; i < N; i++){
-		receive(sp, i + 1, msg);
-		printf("%d\n", ((BalanceHistory*)(msg->s_payload))->s_history_len);
-		all_history->s_history[i] = *((BalanceHistory*)(msg->s_payload));
-	}
-	all_history->s_history_len = N;
+	
 
 	for(i = 0; i < N; i++){
 		wait(NULL);
 	}
-
-	print_history(all_history);
 
 	return 0;
 }
